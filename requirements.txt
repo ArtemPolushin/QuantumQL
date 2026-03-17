@@ -1,0 +1,5 @@
+ply==3.11
+pytest>=7.0
+qiskit>=2.0
+qiskit-aer>=0.13
+qiskit_qasm3_import>=0.4

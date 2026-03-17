@@ -1,0 +1,929 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    SELECT
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> statement_list
+Rule 2     statement_list -> statement statement_list
+Rule 3     statement_list -> statement
+Rule 4     statement -> create_stmt
+Rule 5     statement -> apply_stmt
+Rule 6     statement -> measure_stmt
+Rule 7     statement -> gate_def
+Rule 8     create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON
+Rule 9     condition_expr -> condition_expr AND condition_expr
+Rule 10    condition_expr -> condition_expr OR condition_expr
+Rule 11    condition_expr -> simple_condition
+Rule 12    number -> INT
+Rule 13    number -> FLOAT
+Rule 14    simple_condition -> IDENT LT number
+Rule 15    simple_condition -> IDENT GT number
+Rule 16    simple_condition -> IDENT LE number
+Rule 17    simple_condition -> IDENT GE number
+Rule 18    simple_condition -> IDENT EQ number
+Rule 19    simple_condition -> IDENT NE number
+Rule 20    apply_stmt -> APPLY IDENT ON target_list SEMICOLON
+Rule 21    measure_stmt -> MEASURE target_list SEMICOLON
+Rule 22    target_list -> single_target target_tail
+Rule 23    target_tail -> COMMA single_target target_tail
+Rule 24    target_tail -> empty
+Rule 25    single_target -> qubit
+Rule 26    single_target -> IDENT WHERE condition_expr
+Rule 27    qubit -> IDENT
+Rule 28    qubit -> IDENT LBRACKET INT RBRACKET
+Rule 29    qubit -> IDENT LBRACKET STAR RBRACKET
+Rule 30    qubit -> IDENT LBRACKET INT COLON INT RBRACKET
+Rule 31    gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE
+Rule 32    param_list -> IDENT param_tail
+Rule 33    param_tail -> COMMA IDENT param_tail
+Rule 34    param_tail -> empty
+Rule 35    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 9
+APPLY                : 20
+COLON                : 30
+COMMA                : 23 33
+CREATE               : 8
+EQ                   : 18
+FLOAT                : 13
+GATE                 : 31
+GE                   : 17
+GT                   : 15
+IDENT                : 8 14 15 16 17 18 19 20 26 27 28 29 30 31 32 33
+INT                  : 8 12 28 30 30
+LBRACE               : 31
+LBRACKET             : 8 28 29 30
+LE                   : 16
+LPAREN               : 31
+LT                   : 14
+MEASURE              : 21
+NE                   : 19
+ON                   : 20
+OR                   : 10
+QUBITS               : 8
+RBRACE               : 31
+RBRACKET             : 8 28 29 30
+RPAREN               : 31
+SELECT               : 
+SEMICOLON            : 8 20 21
+STAR                 : 29
+WHERE                : 26
+error                : 
+
+Nonterminals, with rules where they appear
+
+apply_stmt           : 5
+condition_expr       : 9 9 10 10 26
+create_stmt          : 4
+empty                : 24 34
+gate_def             : 7
+measure_stmt         : 6
+number               : 14 15 16 17 18 19
+param_list           : 31
+param_tail           : 32 33
+program              : 0
+qubit                : 25
+simple_condition     : 11
+single_target        : 22 23
+statement            : 2 3
+statement_list       : 1 2 31
+target_list          : 20 21
+target_tail          : 22 23
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . statement_list
+    (2) statement_list -> . statement statement_list
+    (3) statement_list -> . statement
+    (4) statement -> . create_stmt
+    (5) statement -> . apply_stmt
+    (6) statement -> . measure_stmt
+    (7) statement -> . gate_def
+    (8) create_stmt -> . CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON
+    (20) apply_stmt -> . APPLY IDENT ON target_list SEMICOLON
+    (21) measure_stmt -> . MEASURE target_list SEMICOLON
+    (31) gate_def -> . GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE
+
+    CREATE          shift and go to state 8
+    APPLY           shift and go to state 9
+    MEASURE         shift and go to state 10
+    GATE            shift and go to state 11
+
+    program                        shift and go to state 1
+    statement_list                 shift and go to state 2
+    statement                      shift and go to state 3
+    create_stmt                    shift and go to state 4
+    apply_stmt                     shift and go to state 5
+    measure_stmt                   shift and go to state 6
+    gate_def                       shift and go to state 7
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> statement_list .
+
+    $end            reduce using rule 1 (program -> statement_list .)
+
+
+state 3
+
+    (2) statement_list -> statement . statement_list
+    (3) statement_list -> statement .
+    (2) statement_list -> . statement statement_list
+    (3) statement_list -> . statement
+    (4) statement -> . create_stmt
+    (5) statement -> . apply_stmt
+    (6) statement -> . measure_stmt
+    (7) statement -> . gate_def
+    (8) create_stmt -> . CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON
+    (20) apply_stmt -> . APPLY IDENT ON target_list SEMICOLON
+    (21) measure_stmt -> . MEASURE target_list SEMICOLON
+    (31) gate_def -> . GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE
+
+    $end            reduce using rule 3 (statement_list -> statement .)
+    RBRACE          reduce using rule 3 (statement_list -> statement .)
+    CREATE          shift and go to state 8
+    APPLY           shift and go to state 9
+    MEASURE         shift and go to state 10
+    GATE            shift and go to state 11
+
+    statement                      shift and go to state 3
+    statement_list                 shift and go to state 12
+    create_stmt                    shift and go to state 4
+    apply_stmt                     shift and go to state 5
+    measure_stmt                   shift and go to state 6
+    gate_def                       shift and go to state 7
+
+state 4
+
+    (4) statement -> create_stmt .
+
+    CREATE          reduce using rule 4 (statement -> create_stmt .)
+    APPLY           reduce using rule 4 (statement -> create_stmt .)
+    MEASURE         reduce using rule 4 (statement -> create_stmt .)
+    GATE            reduce using rule 4 (statement -> create_stmt .)
+    $end            reduce using rule 4 (statement -> create_stmt .)
+    RBRACE          reduce using rule 4 (statement -> create_stmt .)
+
+
+state 5
+
+    (5) statement -> apply_stmt .
+
+    CREATE          reduce using rule 5 (statement -> apply_stmt .)
+    APPLY           reduce using rule 5 (statement -> apply_stmt .)
+    MEASURE         reduce using rule 5 (statement -> apply_stmt .)
+    GATE            reduce using rule 5 (statement -> apply_stmt .)
+    $end            reduce using rule 5 (statement -> apply_stmt .)
+    RBRACE          reduce using rule 5 (statement -> apply_stmt .)
+
+
+state 6
+
+    (6) statement -> measure_stmt .
+
+    CREATE          reduce using rule 6 (statement -> measure_stmt .)
+    APPLY           reduce using rule 6 (statement -> measure_stmt .)
+    MEASURE         reduce using rule 6 (statement -> measure_stmt .)
+    GATE            reduce using rule 6 (statement -> measure_stmt .)
+    $end            reduce using rule 6 (statement -> measure_stmt .)
+    RBRACE          reduce using rule 6 (statement -> measure_stmt .)
+
+
+state 7
+
+    (7) statement -> gate_def .
+
+    CREATE          reduce using rule 7 (statement -> gate_def .)
+    APPLY           reduce using rule 7 (statement -> gate_def .)
+    MEASURE         reduce using rule 7 (statement -> gate_def .)
+    GATE            reduce using rule 7 (statement -> gate_def .)
+    $end            reduce using rule 7 (statement -> gate_def .)
+    RBRACE          reduce using rule 7 (statement -> gate_def .)
+
+
+state 8
+
+    (8) create_stmt -> CREATE . QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON
+
+    QUBITS          shift and go to state 13
+
+
+state 9
+
+    (20) apply_stmt -> APPLY . IDENT ON target_list SEMICOLON
+
+    IDENT           shift and go to state 14
+
+
+state 10
+
+    (21) measure_stmt -> MEASURE . target_list SEMICOLON
+    (22) target_list -> . single_target target_tail
+    (25) single_target -> . qubit
+    (26) single_target -> . IDENT WHERE condition_expr
+    (27) qubit -> . IDENT
+    (28) qubit -> . IDENT LBRACKET INT RBRACKET
+    (29) qubit -> . IDENT LBRACKET STAR RBRACKET
+    (30) qubit -> . IDENT LBRACKET INT COLON INT RBRACKET
+
+    IDENT           shift and go to state 18
+
+    target_list                    shift and go to state 15
+    single_target                  shift and go to state 16
+    qubit                          shift and go to state 17
+
+state 11
+
+    (31) gate_def -> GATE . IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE
+
+    IDENT           shift and go to state 19
+
+
+state 12
+
+    (2) statement_list -> statement statement_list .
+
+    $end            reduce using rule 2 (statement_list -> statement statement_list .)
+    RBRACE          reduce using rule 2 (statement_list -> statement statement_list .)
+
+
+state 13
+
+    (8) create_stmt -> CREATE QUBITS . IDENT LBRACKET INT RBRACKET SEMICOLON
+
+    IDENT           shift and go to state 20
+
+
+state 14
+
+    (20) apply_stmt -> APPLY IDENT . ON target_list SEMICOLON
+
+    ON              shift and go to state 21
+
+
+state 15
+
+    (21) measure_stmt -> MEASURE target_list . SEMICOLON
+
+    SEMICOLON       shift and go to state 22
+
+
+state 16
+
+    (22) target_list -> single_target . target_tail
+    (23) target_tail -> . COMMA single_target target_tail
+    (24) target_tail -> . empty
+    (35) empty -> .
+
+    COMMA           shift and go to state 24
+    SEMICOLON       reduce using rule 35 (empty -> .)
+
+    target_tail                    shift and go to state 23
+    empty                          shift and go to state 25
+
+state 17
+
+    (25) single_target -> qubit .
+
+    COMMA           reduce using rule 25 (single_target -> qubit .)
+    SEMICOLON       reduce using rule 25 (single_target -> qubit .)
+
+
+state 18
+
+    (26) single_target -> IDENT . WHERE condition_expr
+    (27) qubit -> IDENT .
+    (28) qubit -> IDENT . LBRACKET INT RBRACKET
+    (29) qubit -> IDENT . LBRACKET STAR RBRACKET
+    (30) qubit -> IDENT . LBRACKET INT COLON INT RBRACKET
+
+    WHERE           shift and go to state 26
+    COMMA           reduce using rule 27 (qubit -> IDENT .)
+    SEMICOLON       reduce using rule 27 (qubit -> IDENT .)
+    LBRACKET        shift and go to state 27
+
+
+state 19
+
+    (31) gate_def -> GATE IDENT . LPAREN param_list RPAREN LBRACE statement_list RBRACE
+
+    LPAREN          shift and go to state 28
+
+
+state 20
+
+    (8) create_stmt -> CREATE QUBITS IDENT . LBRACKET INT RBRACKET SEMICOLON
+
+    LBRACKET        shift and go to state 29
+
+
+state 21
+
+    (20) apply_stmt -> APPLY IDENT ON . target_list SEMICOLON
+    (22) target_list -> . single_target target_tail
+    (25) single_target -> . qubit
+    (26) single_target -> . IDENT WHERE condition_expr
+    (27) qubit -> . IDENT
+    (28) qubit -> . IDENT LBRACKET INT RBRACKET
+    (29) qubit -> . IDENT LBRACKET STAR RBRACKET
+    (30) qubit -> . IDENT LBRACKET INT COLON INT RBRACKET
+
+    IDENT           shift and go to state 18
+
+    target_list                    shift and go to state 30
+    single_target                  shift and go to state 16
+    qubit                          shift and go to state 17
+
+state 22
+
+    (21) measure_stmt -> MEASURE target_list SEMICOLON .
+
+    CREATE          reduce using rule 21 (measure_stmt -> MEASURE target_list SEMICOLON .)
+    APPLY           reduce using rule 21 (measure_stmt -> MEASURE target_list SEMICOLON .)
+    MEASURE         reduce using rule 21 (measure_stmt -> MEASURE target_list SEMICOLON .)
+    GATE            reduce using rule 21 (measure_stmt -> MEASURE target_list SEMICOLON .)
+    $end            reduce using rule 21 (measure_stmt -> MEASURE target_list SEMICOLON .)
+    RBRACE          reduce using rule 21 (measure_stmt -> MEASURE target_list SEMICOLON .)
+
+
+state 23
+
+    (22) target_list -> single_target target_tail .
+
+    SEMICOLON       reduce using rule 22 (target_list -> single_target target_tail .)
+
+
+state 24
+
+    (23) target_tail -> COMMA . single_target target_tail
+    (25) single_target -> . qubit
+    (26) single_target -> . IDENT WHERE condition_expr
+    (27) qubit -> . IDENT
+    (28) qubit -> . IDENT LBRACKET INT RBRACKET
+    (29) qubit -> . IDENT LBRACKET STAR RBRACKET
+    (30) qubit -> . IDENT LBRACKET INT COLON INT RBRACKET
+
+    IDENT           shift and go to state 18
+
+    single_target                  shift and go to state 31
+    qubit                          shift and go to state 17
+
+state 25
+
+    (24) target_tail -> empty .
+
+    SEMICOLON       reduce using rule 24 (target_tail -> empty .)
+
+
+state 26
+
+    (26) single_target -> IDENT WHERE . condition_expr
+    (9) condition_expr -> . condition_expr AND condition_expr
+    (10) condition_expr -> . condition_expr OR condition_expr
+    (11) condition_expr -> . simple_condition
+    (14) simple_condition -> . IDENT LT number
+    (15) simple_condition -> . IDENT GT number
+    (16) simple_condition -> . IDENT LE number
+    (17) simple_condition -> . IDENT GE number
+    (18) simple_condition -> . IDENT EQ number
+    (19) simple_condition -> . IDENT NE number
+
+    IDENT           shift and go to state 32
+
+    condition_expr                 shift and go to state 33
+    simple_condition               shift and go to state 34
+
+state 27
+
+    (28) qubit -> IDENT LBRACKET . INT RBRACKET
+    (29) qubit -> IDENT LBRACKET . STAR RBRACKET
+    (30) qubit -> IDENT LBRACKET . INT COLON INT RBRACKET
+
+    INT             shift and go to state 35
+    STAR            shift and go to state 36
+
+
+state 28
+
+    (31) gate_def -> GATE IDENT LPAREN . param_list RPAREN LBRACE statement_list RBRACE
+    (32) param_list -> . IDENT param_tail
+
+    IDENT           shift and go to state 37
+
+    param_list                     shift and go to state 38
+
+state 29
+
+    (8) create_stmt -> CREATE QUBITS IDENT LBRACKET . INT RBRACKET SEMICOLON
+
+    INT             shift and go to state 39
+
+
+state 30
+
+    (20) apply_stmt -> APPLY IDENT ON target_list . SEMICOLON
+
+    SEMICOLON       shift and go to state 40
+
+
+state 31
+
+    (23) target_tail -> COMMA single_target . target_tail
+    (23) target_tail -> . COMMA single_target target_tail
+    (24) target_tail -> . empty
+    (35) empty -> .
+
+    COMMA           shift and go to state 24
+    SEMICOLON       reduce using rule 35 (empty -> .)
+
+    target_tail                    shift and go to state 41
+    empty                          shift and go to state 25
+
+state 32
+
+    (14) simple_condition -> IDENT . LT number
+    (15) simple_condition -> IDENT . GT number
+    (16) simple_condition -> IDENT . LE number
+    (17) simple_condition -> IDENT . GE number
+    (18) simple_condition -> IDENT . EQ number
+    (19) simple_condition -> IDENT . NE number
+
+    LT              shift and go to state 42
+    GT              shift and go to state 43
+    LE              shift and go to state 44
+    GE              shift and go to state 45
+    EQ              shift and go to state 46
+    NE              shift and go to state 47
+
+
+state 33
+
+    (26) single_target -> IDENT WHERE condition_expr .
+    (9) condition_expr -> condition_expr . AND condition_expr
+    (10) condition_expr -> condition_expr . OR condition_expr
+
+    COMMA           reduce using rule 26 (single_target -> IDENT WHERE condition_expr .)
+    SEMICOLON       reduce using rule 26 (single_target -> IDENT WHERE condition_expr .)
+    AND             shift and go to state 48
+    OR              shift and go to state 49
+
+
+state 34
+
+    (11) condition_expr -> simple_condition .
+
+    AND             reduce using rule 11 (condition_expr -> simple_condition .)
+    OR              reduce using rule 11 (condition_expr -> simple_condition .)
+    COMMA           reduce using rule 11 (condition_expr -> simple_condition .)
+    SEMICOLON       reduce using rule 11 (condition_expr -> simple_condition .)
+
+
+state 35
+
+    (28) qubit -> IDENT LBRACKET INT . RBRACKET
+    (30) qubit -> IDENT LBRACKET INT . COLON INT RBRACKET
+
+    RBRACKET        shift and go to state 50
+    COLON           shift and go to state 51
+
+
+state 36
+
+    (29) qubit -> IDENT LBRACKET STAR . RBRACKET
+
+    RBRACKET        shift and go to state 52
+
+
+state 37
+
+    (32) param_list -> IDENT . param_tail
+    (33) param_tail -> . COMMA IDENT param_tail
+    (34) param_tail -> . empty
+    (35) empty -> .
+
+    COMMA           shift and go to state 54
+    RPAREN          reduce using rule 35 (empty -> .)
+
+    param_tail                     shift and go to state 53
+    empty                          shift and go to state 55
+
+state 38
+
+    (31) gate_def -> GATE IDENT LPAREN param_list . RPAREN LBRACE statement_list RBRACE
+
+    RPAREN          shift and go to state 56
+
+
+state 39
+
+    (8) create_stmt -> CREATE QUBITS IDENT LBRACKET INT . RBRACKET SEMICOLON
+
+    RBRACKET        shift and go to state 57
+
+
+state 40
+
+    (20) apply_stmt -> APPLY IDENT ON target_list SEMICOLON .
+
+    CREATE          reduce using rule 20 (apply_stmt -> APPLY IDENT ON target_list SEMICOLON .)
+    APPLY           reduce using rule 20 (apply_stmt -> APPLY IDENT ON target_list SEMICOLON .)
+    MEASURE         reduce using rule 20 (apply_stmt -> APPLY IDENT ON target_list SEMICOLON .)
+    GATE            reduce using rule 20 (apply_stmt -> APPLY IDENT ON target_list SEMICOLON .)
+    $end            reduce using rule 20 (apply_stmt -> APPLY IDENT ON target_list SEMICOLON .)
+    RBRACE          reduce using rule 20 (apply_stmt -> APPLY IDENT ON target_list SEMICOLON .)
+
+
+state 41
+
+    (23) target_tail -> COMMA single_target target_tail .
+
+    SEMICOLON       reduce using rule 23 (target_tail -> COMMA single_target target_tail .)
+
+
+state 42
+
+    (14) simple_condition -> IDENT LT . number
+    (12) number -> . INT
+    (13) number -> . FLOAT
+
+    INT             shift and go to state 59
+    FLOAT           shift and go to state 60
+
+    number                         shift and go to state 58
+
+state 43
+
+    (15) simple_condition -> IDENT GT . number
+    (12) number -> . INT
+    (13) number -> . FLOAT
+
+    INT             shift and go to state 59
+    FLOAT           shift and go to state 60
+
+    number                         shift and go to state 61
+
+state 44
+
+    (16) simple_condition -> IDENT LE . number
+    (12) number -> . INT
+    (13) number -> . FLOAT
+
+    INT             shift and go to state 59
+    FLOAT           shift and go to state 60
+
+    number                         shift and go to state 62
+
+state 45
+
+    (17) simple_condition -> IDENT GE . number
+    (12) number -> . INT
+    (13) number -> . FLOAT
+
+    INT             shift and go to state 59
+    FLOAT           shift and go to state 60
+
+    number                         shift and go to state 63
+
+state 46
+
+    (18) simple_condition -> IDENT EQ . number
+    (12) number -> . INT
+    (13) number -> . FLOAT
+
+    INT             shift and go to state 59
+    FLOAT           shift and go to state 60
+
+    number                         shift and go to state 64
+
+state 47
+
+    (19) simple_condition -> IDENT NE . number
+    (12) number -> . INT
+    (13) number -> . FLOAT
+
+    INT             shift and go to state 59
+    FLOAT           shift and go to state 60
+
+    number                         shift and go to state 65
+
+state 48
+
+    (9) condition_expr -> condition_expr AND . condition_expr
+    (9) condition_expr -> . condition_expr AND condition_expr
+    (10) condition_expr -> . condition_expr OR condition_expr
+    (11) condition_expr -> . simple_condition
+    (14) simple_condition -> . IDENT LT number
+    (15) simple_condition -> . IDENT GT number
+    (16) simple_condition -> . IDENT LE number
+    (17) simple_condition -> . IDENT GE number
+    (18) simple_condition -> . IDENT EQ number
+    (19) simple_condition -> . IDENT NE number
+
+    IDENT           shift and go to state 32
+
+    condition_expr                 shift and go to state 66
+    simple_condition               shift and go to state 34
+
+state 49
+
+    (10) condition_expr -> condition_expr OR . condition_expr
+    (9) condition_expr -> . condition_expr AND condition_expr
+    (10) condition_expr -> . condition_expr OR condition_expr
+    (11) condition_expr -> . simple_condition
+    (14) simple_condition -> . IDENT LT number
+    (15) simple_condition -> . IDENT GT number
+    (16) simple_condition -> . IDENT LE number
+    (17) simple_condition -> . IDENT GE number
+    (18) simple_condition -> . IDENT EQ number
+    (19) simple_condition -> . IDENT NE number
+
+    IDENT           shift and go to state 32
+
+    condition_expr                 shift and go to state 67
+    simple_condition               shift and go to state 34
+
+state 50
+
+    (28) qubit -> IDENT LBRACKET INT RBRACKET .
+
+    COMMA           reduce using rule 28 (qubit -> IDENT LBRACKET INT RBRACKET .)
+    SEMICOLON       reduce using rule 28 (qubit -> IDENT LBRACKET INT RBRACKET .)
+
+
+state 51
+
+    (30) qubit -> IDENT LBRACKET INT COLON . INT RBRACKET
+
+    INT             shift and go to state 68
+
+
+state 52
+
+    (29) qubit -> IDENT LBRACKET STAR RBRACKET .
+
+    COMMA           reduce using rule 29 (qubit -> IDENT LBRACKET STAR RBRACKET .)
+    SEMICOLON       reduce using rule 29 (qubit -> IDENT LBRACKET STAR RBRACKET .)
+
+
+state 53
+
+    (32) param_list -> IDENT param_tail .
+
+    RPAREN          reduce using rule 32 (param_list -> IDENT param_tail .)
+
+
+state 54
+
+    (33) param_tail -> COMMA . IDENT param_tail
+
+    IDENT           shift and go to state 69
+
+
+state 55
+
+    (34) param_tail -> empty .
+
+    RPAREN          reduce using rule 34 (param_tail -> empty .)
+
+
+state 56
+
+    (31) gate_def -> GATE IDENT LPAREN param_list RPAREN . LBRACE statement_list RBRACE
+
+    LBRACE          shift and go to state 70
+
+
+state 57
+
+    (8) create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET . SEMICOLON
+
+    SEMICOLON       shift and go to state 71
+
+
+state 58
+
+    (14) simple_condition -> IDENT LT number .
+
+    AND             reduce using rule 14 (simple_condition -> IDENT LT number .)
+    OR              reduce using rule 14 (simple_condition -> IDENT LT number .)
+    COMMA           reduce using rule 14 (simple_condition -> IDENT LT number .)
+    SEMICOLON       reduce using rule 14 (simple_condition -> IDENT LT number .)
+
+
+state 59
+
+    (12) number -> INT .
+
+    AND             reduce using rule 12 (number -> INT .)
+    OR              reduce using rule 12 (number -> INT .)
+    COMMA           reduce using rule 12 (number -> INT .)
+    SEMICOLON       reduce using rule 12 (number -> INT .)
+
+
+state 60
+
+    (13) number -> FLOAT .
+
+    AND             reduce using rule 13 (number -> FLOAT .)
+    OR              reduce using rule 13 (number -> FLOAT .)
+    COMMA           reduce using rule 13 (number -> FLOAT .)
+    SEMICOLON       reduce using rule 13 (number -> FLOAT .)
+
+
+state 61
+
+    (15) simple_condition -> IDENT GT number .
+
+    AND             reduce using rule 15 (simple_condition -> IDENT GT number .)
+    OR              reduce using rule 15 (simple_condition -> IDENT GT number .)
+    COMMA           reduce using rule 15 (simple_condition -> IDENT GT number .)
+    SEMICOLON       reduce using rule 15 (simple_condition -> IDENT GT number .)
+
+
+state 62
+
+    (16) simple_condition -> IDENT LE number .
+
+    AND             reduce using rule 16 (simple_condition -> IDENT LE number .)
+    OR              reduce using rule 16 (simple_condition -> IDENT LE number .)
+    COMMA           reduce using rule 16 (simple_condition -> IDENT LE number .)
+    SEMICOLON       reduce using rule 16 (simple_condition -> IDENT LE number .)
+
+
+state 63
+
+    (17) simple_condition -> IDENT GE number .
+
+    AND             reduce using rule 17 (simple_condition -> IDENT GE number .)
+    OR              reduce using rule 17 (simple_condition -> IDENT GE number .)
+    COMMA           reduce using rule 17 (simple_condition -> IDENT GE number .)
+    SEMICOLON       reduce using rule 17 (simple_condition -> IDENT GE number .)
+
+
+state 64
+
+    (18) simple_condition -> IDENT EQ number .
+
+    AND             reduce using rule 18 (simple_condition -> IDENT EQ number .)
+    OR              reduce using rule 18 (simple_condition -> IDENT EQ number .)
+    COMMA           reduce using rule 18 (simple_condition -> IDENT EQ number .)
+    SEMICOLON       reduce using rule 18 (simple_condition -> IDENT EQ number .)
+
+
+state 65
+
+    (19) simple_condition -> IDENT NE number .
+
+    AND             reduce using rule 19 (simple_condition -> IDENT NE number .)
+    OR              reduce using rule 19 (simple_condition -> IDENT NE number .)
+    COMMA           reduce using rule 19 (simple_condition -> IDENT NE number .)
+    SEMICOLON       reduce using rule 19 (simple_condition -> IDENT NE number .)
+
+
+state 66
+
+    (9) condition_expr -> condition_expr AND condition_expr .
+    (9) condition_expr -> condition_expr . AND condition_expr
+    (10) condition_expr -> condition_expr . OR condition_expr
+
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    COMMA           reduce using rule 9 (condition_expr -> condition_expr AND condition_expr .)
+    SEMICOLON       reduce using rule 9 (condition_expr -> condition_expr AND condition_expr .)
+    AND             shift and go to state 48
+    OR              shift and go to state 49
+
+  ! AND             [ reduce using rule 9 (condition_expr -> condition_expr AND condition_expr .) ]
+  ! OR              [ reduce using rule 9 (condition_expr -> condition_expr AND condition_expr .) ]
+
+
+state 67
+
+    (10) condition_expr -> condition_expr OR condition_expr .
+    (9) condition_expr -> condition_expr . AND condition_expr
+    (10) condition_expr -> condition_expr . OR condition_expr
+
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    COMMA           reduce using rule 10 (condition_expr -> condition_expr OR condition_expr .)
+    SEMICOLON       reduce using rule 10 (condition_expr -> condition_expr OR condition_expr .)
+    AND             shift and go to state 48
+    OR              shift and go to state 49
+
+  ! AND             [ reduce using rule 10 (condition_expr -> condition_expr OR condition_expr .) ]
+  ! OR              [ reduce using rule 10 (condition_expr -> condition_expr OR condition_expr .) ]
+
+
+state 68
+
+    (30) qubit -> IDENT LBRACKET INT COLON INT . RBRACKET
+
+    RBRACKET        shift and go to state 72
+
+
+state 69
+
+    (33) param_tail -> COMMA IDENT . param_tail
+    (33) param_tail -> . COMMA IDENT param_tail
+    (34) param_tail -> . empty
+    (35) empty -> .
+
+    COMMA           shift and go to state 54
+    RPAREN          reduce using rule 35 (empty -> .)
+
+    param_tail                     shift and go to state 73
+    empty                          shift and go to state 55
+
+state 70
+
+    (31) gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE . statement_list RBRACE
+    (2) statement_list -> . statement statement_list
+    (3) statement_list -> . statement
+    (4) statement -> . create_stmt
+    (5) statement -> . apply_stmt
+    (6) statement -> . measure_stmt
+    (7) statement -> . gate_def
+    (8) create_stmt -> . CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON
+    (20) apply_stmt -> . APPLY IDENT ON target_list SEMICOLON
+    (21) measure_stmt -> . MEASURE target_list SEMICOLON
+    (31) gate_def -> . GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE
+
+    CREATE          shift and go to state 8
+    APPLY           shift and go to state 9
+    MEASURE         shift and go to state 10
+    GATE            shift and go to state 11
+
+    statement_list                 shift and go to state 74
+    statement                      shift and go to state 3
+    create_stmt                    shift and go to state 4
+    apply_stmt                     shift and go to state 5
+    measure_stmt                   shift and go to state 6
+    gate_def                       shift and go to state 7
+
+state 71
+
+    (8) create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON .
+
+    CREATE          reduce using rule 8 (create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON .)
+    APPLY           reduce using rule 8 (create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON .)
+    MEASURE         reduce using rule 8 (create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON .)
+    GATE            reduce using rule 8 (create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON .)
+    $end            reduce using rule 8 (create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON .)
+    RBRACE          reduce using rule 8 (create_stmt -> CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON .)
+
+
+state 72
+
+    (30) qubit -> IDENT LBRACKET INT COLON INT RBRACKET .
+
+    COMMA           reduce using rule 30 (qubit -> IDENT LBRACKET INT COLON INT RBRACKET .)
+    SEMICOLON       reduce using rule 30 (qubit -> IDENT LBRACKET INT COLON INT RBRACKET .)
+
+
+state 73
+
+    (33) param_tail -> COMMA IDENT param_tail .
+
+    RPAREN          reduce using rule 33 (param_tail -> COMMA IDENT param_tail .)
+
+
+state 74
+
+    (31) gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list . RBRACE
+
+    RBRACE          shift and go to state 75
+
+
+state 75
+
+    (31) gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE .
+
+    CREATE          reduce using rule 31 (gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE .)
+    APPLY           reduce using rule 31 (gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE .)
+    MEASURE         reduce using rule 31 (gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE .)
+    GATE            reduce using rule 31 (gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE .)
+    $end            reduce using rule 31 (gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE .)
+    RBRACE          reduce using rule 31 (gate_def -> GATE IDENT LPAREN param_list RPAREN LBRACE statement_list RBRACE .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for AND in state 66 resolved as shift
+WARNING: shift/reduce conflict for OR in state 66 resolved as shift
+WARNING: shift/reduce conflict for AND in state 67 resolved as shift
+WARNING: shift/reduce conflict for OR in state 67 resolved as shift
