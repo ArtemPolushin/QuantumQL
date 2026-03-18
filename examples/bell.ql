@@ -1,0 +1,6 @@
+CREATE QUBITS q[2];
+
+APPLY H ON q[0];
+APPLY CX ON q[0], q[1];
+
+MEASURE q;
