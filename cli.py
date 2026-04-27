@@ -3,8 +3,9 @@
 import sys
 from parser import parser
 from lexer import lexer
-from generators.qiskit import QiskitTranslator
-from generators.openqasm import OpenQASMTranslator
+from ir.ir_pipeline import IRPipeline
+from generators.qiskit_generator import QiskitGenerator
+from generators.openqasm_generator import OpenQASMGenerator
 
 def main():
     if len(sys.argv) != 4:
@@ -27,18 +28,25 @@ def main():
         sys.exit(1)
 
     try:
+        pipeline = IRPipeline()
+        ir = pipeline.run(ast)
+    except Exception as e:
+        print(f"IR error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
         if target.lower() == "qiskit":
-            translator = QiskitTranslator()
+            generator = QiskitGenerator()
         elif target.lower() == "openqasm":
-            translator = OpenQASMTranslator()
+            generator = OpenQASMGenerator()
         else:
             print(f"Unsupported target language: {target}", file=sys.stderr)
             sys.exit(1)
 
-        output_code = translator.translate(ast)
+        output_code = generator.generate(ir)
 
     except Exception as e:
-        print(f"Translation error: {e}", file=sys.stderr)
+        print(f"Generator error: {e}", file=sys.stderr)
         sys.exit(1)
 
     with open(outfile, "w") as f:

@@ -9,7 +9,6 @@ GATE MAJORITY(a,b,c) {
     APPLY CX ON c, a;
     APPLY CCX ON a, b, c;
 }
--- UNMAJ FUNCTION
 GATE UNMAJ(a,b,c) {
     APPLY CCX ON a,b,c;
     APPLY CX ON c,a;
@@ -18,7 +17,6 @@ GATE UNMAJ(a,b,c) {
 }
 
 APPLY X ON a[0];
-APPLY X ON cin;
 APPLY X ON b[0];
 
 APPLY MAJORITY ON cin[0], b[0], a[0];

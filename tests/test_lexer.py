@@ -58,7 +58,7 @@ def test_identifiers(identifier):
 @pytest.mark.parametrize("symbol,token_type", [
     ("<", "LT"),
     (">", "GT"),
-    ("=", "EQ"),
+    ("==", "EQEQ"),
     ("*", "STAR"),
     (":", "COLON")
 ])
