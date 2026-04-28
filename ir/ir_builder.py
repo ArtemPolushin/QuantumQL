@@ -8,7 +8,8 @@ class IRBuilder:
     def _stmt(self, stmt):
         if isinstance(stmt, CreateQubits):
             return IRCreateQubits(stmt.name, stmt.size)
-
+        if isinstance(stmt, CreateBits):
+            return IRCreateBits(stmt.name, stmt.size)
         if isinstance(stmt, ApplyGate):
             return IRApply(
                 gate=stmt.gate,
@@ -33,7 +34,7 @@ class IRBuilder:
                 [self._stmt(s) for s in stmt.body]
             )
         
-        if isinstance(stmt, IRInputParam):
+        if isinstance(stmt, InputParam):
             return IRInputParam(stmt.name)
 
         raise ValueError(f"Unknown statement type: {type(stmt)}")

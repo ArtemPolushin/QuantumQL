@@ -41,6 +41,10 @@ def p_create_stmt(p):
     "create_stmt : CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON"
     p[0] = CreateQubits(p[3], p[5])
 
+def p_create_bits_stmt(p):
+    "create_stmt : CREATE BITS IDENT LBRACKET INT RBRACKET SEMICOLON"
+    p[0] = CreateBits(p[3], p[5])
+
 def p_apply_stmt(p):
     "apply_stmt : APPLY gate_call ON target_list SEMICOLON"
     p[0] = ApplyGate(p[2][0], p[4], params=p[2][1])

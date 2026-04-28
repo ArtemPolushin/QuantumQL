@@ -30,18 +30,27 @@ class QiskitGenerator:
             self.indent = "    "
         
         regs = {}
+        cregs = {}
         for stmt in ir.body:
             if isinstance(stmt, IRCreateQubits):
                 regs[stmt.name] = stmt.size
-                self.emit_body(f'{stmt.name} = QuantumRegister({stmt.size}, "{stmt.name}")')
-                self.emit_body(f'{stmt.name}_c = ClassicalRegister({stmt.size}, "{stmt.name}_c")')
-
-        if regs:
-            qargs = ", ".join(list(regs.keys()) + [f"{r}_c" for r in regs])
+                cregs[f"{stmt.name}_c"] = stmt.size
+            elif isinstance(stmt, IRCreateBits):
+                cregs[stmt.name] = stmt.size
+        for name, size in regs.items():
+            self.emit_body(f'{name} = QuantumRegister({size}, "{name}")')
+    
+        for name, size in cregs.items():
+            if name in regs:
+                self.emit_body(f'{name}_c = ClassicalRegister({size}, "{name}_c")')
+            else:
+                self.emit_body(f'{name} = ClassicalRegister({size}, "{name}")')
+        all_regs = list(regs.keys()) + [n for n in cregs if n not in regs]
+        if all_regs:
+            qargs = ", ".join(all_regs)
             self.emit_body(f"qc = QuantumCircuit({qargs})")
         else:
             self.emit_body("qc = QuantumCircuit()")
-
         for stmt in ir.body:
             if isinstance(stmt, IRApply):
                 self._apply(stmt)
@@ -64,6 +73,13 @@ class QiskitGenerator:
             raise ValueError(f"Unknown constant: {p.name}")
         if isinstance(p, IRVar):
             return p.name
+        if isinstance(p, IRBinOp):
+            left = self._eval_param(p.left)
+            right = self._eval_param(p.right)
+            return f"({left} {p.op} {right})"
+        if isinstance(p, IRUnaryOp):
+            inner = self._eval_param(p.expr)
+            return f"({p.op}{inner})"
         raise ValueError(f"Unexpected expression in generator: {type(p)}")
 
     def _apply(self, stmt: IRApply):
@@ -82,7 +98,6 @@ class QiskitGenerator:
             self.emit_body(f"qc.{gate}({', '.join(args + targets)})")
         else:
             self.emit_body(f"qc.{gate}({', '.join(targets)})")
-
     def _measure(self, stmt: IRMeasure):
         for i, q in enumerate(stmt.source):
             q_str = self._q(q)
@@ -93,7 +108,6 @@ class QiskitGenerator:
                 c_str = q_str.replace('[', '_c[') if '[' in q_str else f"{q_str}_c"
             
             self.emit_body(f"qc.measure({q_str}, {c_str})")
-
     def _q(self, q: IRQubit):
         if q.index is None:
             return f"{q.reg}"

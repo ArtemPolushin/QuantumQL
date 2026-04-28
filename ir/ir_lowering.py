@@ -1,4 +1,5 @@
 from ir.ir_classes import *
+import math
 
 class IRLowering:
     def __init__(self):
@@ -35,7 +36,6 @@ class IRLowering:
         return [stmt]
     def _expand_user_gate(self, stmt):
         gate = self.env[stmt.gate]
-
         param_map = {}
         target_map = {}
 
@@ -67,11 +67,8 @@ class IRLowering:
 
         return stmt
     def _resolve_value(self, t, param_map):
-        import math
-        
         if isinstance(t, IRNumber):
             return t
-        
         if isinstance(t, IRVar):
             if t.name in param_map:
                 value = param_map[t.name]
@@ -79,7 +76,17 @@ class IRLowering:
                     return IRNumber(math.pi)
                 return value
             return t
-        
+        if isinstance(t, IRBinOp):
+            return IRBinOp(
+                self._resolve_value(t.left, param_map),
+                t.op,
+                self._resolve_value(t.right, param_map)
+            )
+        if isinstance(t, IRUnaryOp):
+            return IRUnaryOp(
+                t.op,
+                self._resolve_value(t.expr, param_map)
+            )
         return t
     def _resolve_target(self, t, target_map):
         if isinstance(t, IRQubit):

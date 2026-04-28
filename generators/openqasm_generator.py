@@ -14,25 +14,21 @@ class OpenQASMGenerator:
         self.emit("OPENQASM 3.0;")
         self.emit('include "stdgates.inc";')
         
-        has_inputs = False
-        for stmt in ir.body:
-            if isinstance(stmt, IRInputParam):
-                self.emit(f"input float {stmt.name};")
-                has_inputs = True
-        
-        if has_inputs:
-            self.emit("")
-        
         qubits = {}
         bits = {}
-
+        
         for stmt in ir.body:
             if isinstance(stmt, IRCreateQubits):
                 qubits[stmt.name] = stmt.size
+                bits[f"{stmt.name}_c"] = stmt.size
+            elif isinstance(stmt, IRCreateBits):
                 bits[stmt.name] = stmt.size
-                self.emit(f"qubit[{stmt.size}] {stmt.name};")
-                self.emit(f"bit[{stmt.size}] {stmt.name}_c;")
-
+        
+        for name, size in qubits.items():
+            self.emit(f"qubit[{size}] {name};")
+        
+        for name, size in bits.items():
+            self.emit(f"bit[{size}] {name};")
         self.emit("")
 
         for stmt in ir.body:
@@ -52,6 +48,13 @@ class OpenQASMGenerator:
             raise ValueError(f"Unknown constant: {p.name}")
         if isinstance(p, IRVar):
             return p.name
+        if isinstance(p, IRBinOp):
+            left = self._eval_param(p.left)
+            right = self._eval_param(p.right)
+            return f"({left} {p.op} {right})"
+        if isinstance(p, IRUnaryOp):
+            inner = self._eval_param(p.expr)
+            return f"({p.op}{inner})"
         raise ValueError(f"Unexpected expression in generator: {type(p)}")
 
     def _apply(self, stmt: IRApply):

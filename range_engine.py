@@ -66,6 +66,14 @@ class RangeEngine:
                 return [IRQubit(t.reg, i) for i in range(size)]
             elif isinstance(t.index, tuple):
                 start, end = t.index
+                if t.reg in self.reg_sizes:
+                    size = self.reg_sizes[t.reg]
+                    indices = range(start, end + 1) if start <= end else range(start, end - 1, -1)
+                    for i in indices:
+                        if i < 0 or i >= size:
+                            raise ValueError(
+                                f"Index {i} out of range for register '{t.reg}' of size {size}"
+                            )
                 if start <= end:
                     return [IRQubit(t.reg, i) for i in range(start, end + 1)]
                 else:

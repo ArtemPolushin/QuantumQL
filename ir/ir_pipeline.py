@@ -12,9 +12,8 @@ class IRPipeline:
         self.debug = debug
         self.passes = [
             ("Build IR", IRBuilder()),
-            ("Const Eval 1", ConstEvaluator()),
+            ("Const Eval", ConstEvaluator()),
             ("Lowering", IRLowering()),
-            ("Const Eval 2", ConstEvaluator()),
             ("Select Resolver", SelectResolver()),
             ("Range Engine", RangeEngine()),
             ("Single Qubit Expand", SingleQubitExpand()),

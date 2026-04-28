@@ -32,6 +32,11 @@ class IRCreateQubits(IRStmt):
     size: int
 
 @dataclass
+class IRCreateBits(IRStmt):
+    name: str
+    size: int
+
+@dataclass
 class IRGateDef(IRStmt):
     name: str
     params: List[str]

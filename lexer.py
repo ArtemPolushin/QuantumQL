@@ -1,7 +1,8 @@
 import ply.lex as lex
 
 tokens = (
-    'CREATE','QUBITS','APPLY','ON','MEASURE',
+    'CREATE','QUBITS','BITS', 
+    'APPLY','ON','MEASURE',
     'GATE','SELECT','WHERE',
     'AND','OR', 'FROM',
     'STAR','COLON', 'ARROW',
@@ -20,6 +21,7 @@ tokens = (
 reserved = {
     'create':'CREATE',
     'qubits':'QUBITS',
+    'bits':'BITS',
     'apply':'APPLY',
     'on':'ON',
     'measure':'MEASURE',
