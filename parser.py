@@ -137,15 +137,15 @@ def p_gate_def(p):
 
 def p_param_list(p):
     """
-    param_list : param_list
+    param_list : param_tail
                | empty
     """
     p[0] = p[1] if p[1] is not None else []
 
-def p_param_list(p):
+def p_param_tail(p):
     """
-    param_list : IDENT
-               | IDENT COMMA param_list
+    param_tail : IDENT
+               | IDENT COMMA param_tail
     """
     if len(p) == 2:
         p[0] = [p[1]]
