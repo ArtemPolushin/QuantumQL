@@ -48,10 +48,14 @@ def main():
     except Exception as e:
         print(f"Generator error: {e}", file=sys.stderr)
         sys.exit(1)
-
-    with open(outfile, "w") as f:
-        f.write(output_code)
-
+        
+    try:
+        with open(outfile, "w") as f:
+            f.write(output_code)
+    except (PermissionError, IOError) as e:
+        print(f"Cannot write to {outfile}: {e}", file=sys.stderr)
+        sys.exit(1)
+    
     print(f"Success, file {outfile} created")
     sys.exit(0)
 
