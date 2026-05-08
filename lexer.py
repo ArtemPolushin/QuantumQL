@@ -15,7 +15,7 @@ tokens = (
     'LPAREN','RPAREN',
     'LBRACE','RBRACE',
     'COMMA','SEMICOLON',
-    'INPUT'
+    'INPUT', 'ALL', 'CONST'
 )
 
 reserved = {
@@ -42,7 +42,9 @@ reserved = {
     'asin':'ASIN',
     'acos':'ACOS',
     'atan':'ATAN',
-    'input':'INPUT'
+    'input':'INPUT',
+    'all':'ALL',
+    'const':'CONST'
 }
 
 t_LE = r'<='

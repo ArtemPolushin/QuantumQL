@@ -6,13 +6,21 @@ import math
 class OpenQASMGenerator:
     def __init__(self):
         self.lines = []
+        self.input_params = []
 
     def emit(self, s: str):
         self.lines.append(s)
 
     def generate(self, ir: IRProgram):
+        self.input_params = [s.name for s in ir.body if isinstance(s, IRInputParam)]
+        
         self.emit("OPENQASM 3.0;")
         self.emit('include "stdgates.inc";')
+        
+        if self.input_params:
+            self.emit("")
+            for p in self.input_params:
+                self.emit(f"input float {p};")
         
         qubits = {}
         bits = {}
@@ -85,6 +93,7 @@ class OpenQASMGenerator:
                 cstr = qstr.split("[")[0] + "_c" if "[" in qstr else qstr + "_c"
             
             self.emit(f"measure {qstr} -> {cstr};")
+    
     def _q(self, q: IRQubit):
         if q.index is None:
             return q.reg

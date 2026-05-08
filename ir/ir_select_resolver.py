@@ -1,5 +1,5 @@
 from ir.ir_classes import *
-import math
+from ir.ir_expr_evaluator import IRExprEvaluator
 from typing import List, Optional, Dict
 
 
@@ -7,10 +7,7 @@ class SelectResolver:
     def __init__(self):
         self.reg_sizes: Dict[str, int] = {}
         self.aliases: Dict[str, List[IRQubit]] = {}
-        self.env = {
-            'pi': math.pi,
-            'e': math.e,
-        }
+        self.evaluator = IRExprEvaluator()
     
     def resolve(self, ir_program: IRProgram) -> IRProgram:
         for stmt in ir_program.body:
@@ -82,83 +79,7 @@ class SelectResolver:
             if condition is None:
                 qubits.append(IRQubit(source_reg, idx))
             else:
-                if self._eval_condition(condition, idx, source_reg):
+                if self.evaluator.eval_condition(condition, idx):
                     qubits.append(IRQubit(source_reg, idx))
         
         return qubits
-    
-    def _eval_condition(self, expr: IRExpr, index: int, reg_name: str = None) -> bool:
-        env = {
-            'index': float(index),
-            'i': float(index),
-        }
-        
-        env.update(self.env)
-        
-        try:
-            result = self._eval_expr(expr, env)
-            return bool(result)
-        except Exception as e:
-            raise ValueError(f"Cannot evaluate condition for index {index}: {e}")
-    
-    def _eval_expr(self, expr: IRExpr, env: dict) -> float:
-        if isinstance(expr, IRNumber):
-            return expr.value
-        
-        elif isinstance(expr, IRConst):
-            if expr.name in env:
-                return env[expr.name]
-            raise ValueError(f"Unknown constant: {expr.name}")
-        
-        elif isinstance(expr, IRVar):
-            if expr.name in env:
-                return env[expr.name]
-            raise ValueError(f"Unknown variable: {expr.name}")
-        
-        elif isinstance(expr, IRBinOp):
-            left = self._eval_expr(expr.left, env)
-            right = self._eval_expr(expr.right, env)
-            op = expr.op
-            
-            if op == '+': return left + right
-            if op == '-': return left - right
-            if op == '*': return left * right
-            if op == '/': return left / right
-            if op == '**': return left ** right
-            if op == '%': return left % right
-            if op == '==': return float(left == right)
-            if op == '!=': return float(left != right)
-            if op == '<': return float(left < right)
-            if op == '>': return float(left > right)
-            if op == '<=': return float(left <= right)
-            if op == '>=': return float(left >= right)
-            if op == 'AND': return float(bool(left) and bool(right))
-            if op == 'OR': return float(bool(left) or bool(right))
-            
-            raise ValueError(f"Unknown binary operator: {op}")
-        
-        elif isinstance(expr, IRUnaryOp):
-            val = self._eval_expr(expr.expr, env)
-            if expr.op == '-': return -val
-            if expr.op == '+': return +val
-            raise ValueError(f"Unknown unary operator: {expr.op}")
-        
-        elif isinstance(expr, IRFuncCall):
-            args = [self._eval_expr(a, env) for a in expr.args]
-            name = expr.name.lower()
-            
-            if name == 'sin' : return math.sin(*args)
-            if name == 'cos' : return math.cos(*args)
-            if name == 'tan' : return math.tan(*args)
-            if name == 'exp' : return math.exp(*args)
-            if name == 'log' : return math.log(*args)
-            if name == 'sqrt': return math.sqrt(*args)
-            if name == 'abs' : return abs(*args)
-            if name == 'asin': return math.asin(*args)
-            if name == 'acos': return math.acos(*args)
-            if name == 'atan': return math.atan(*args)
-            if name == 'pow' : return math.pow(*args)
-            raise ValueError(f"Unknown function: {expr.name}")
-        
-        else:
-            raise ValueError(f"Cannot evaluate expression of type: {type(expr)}")

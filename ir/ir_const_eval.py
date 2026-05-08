@@ -1,27 +1,37 @@
 from ir.ir_classes import *
-import math
+from ir.ir_expr_evaluator import IRExprEvaluator
 
 
-class ConstEvaluator:    
+class ConstEvaluator:
     def __init__(self):
-        self.env = {
-            'pi': math.pi,
-            'e': math.e,
-            'tau': math.pi * 2
-        }
+        self.constants = {}
+        self.evaluator = IRExprEvaluator()
     
     def evaluate(self, ir_program: IRProgram) -> IRProgram:
         new_body = []
         for stmt in ir_program.body:
-            new_body.append(self._eval_stmt(stmt))
-        return IRProgram(new_body)
+            if isinstance(stmt, IRConstDecl):
+                try:
+                    value = self.evaluator.eval_to_value(stmt.value)
+                    self.constants[stmt.name] = value
+                    self.evaluator.env[stmt.name] = value
+                except Exception:
+                    raise ValueError(f"Cannot evaluate const '{stmt.name}' at compile time")
+            else:
+                new_body.append(stmt)
+        
+        result = []
+        for stmt in new_body:
+            result.append(self._eval_stmt(stmt))
+        
+        return IRProgram(result)
     
     def _eval_stmt(self, stmt: IRStmt) -> IRStmt:
         if isinstance(stmt, IRApply):
             return IRApply(
                 gate=stmt.gate,
-                params=[self._eval_expr(p) for p in stmt.params],
-                targets=stmt.targets
+                params=[self.evaluator.eval_to_expr(p) for p in stmt.params],
+                targets=[self._subst_target(t) for t in stmt.targets]
             )
         elif isinstance(stmt, IRGateDef):
             return IRGateDef(
@@ -29,77 +39,49 @@ class ConstEvaluator:
                 params=stmt.params,
                 body=[self._eval_stmt(s) for s in stmt.body]
             )
+        elif isinstance(stmt, IRCreateQubits):
+            new_size = self._subst_const_in_value(stmt.size)
+            return IRCreateQubits(stmt.name, new_size)
+        elif isinstance(stmt, IRCreateBits):
+            new_size = self._subst_const_in_value(stmt.size)
+            return IRCreateBits(stmt.name, new_size)
         elif isinstance(stmt, IRSelectStmt):
             if stmt.condition:
                 return IRSelectStmt(
                     alias=stmt.alias,
                     source=stmt.source,
-                    condition=self._eval_expr(stmt.condition)
+                    condition=self.evaluator.eval_to_expr(stmt.condition)
                 )
             return stmt
+        elif isinstance(stmt, IRAggregateTarget):
+            return IRAggregateTarget(
+                source=stmt.source,
+                condition=self.evaluator.eval_to_expr(stmt.condition) if stmt.condition else None
+            )
+        elif isinstance(stmt, IRMeasure):
+            return IRMeasure(
+                source=[self._subst_target(t) for t in stmt.source],
+                target=[self._subst_target(t) for t in stmt.target] if stmt.target else None
+            )
         else:
             return stmt
     
-    def _eval_expr(self, expr: IRExpr) -> IRExpr:
-        try:
-            value = self._compute(expr)
-            return IRNumber(value)
-        except (ValueError, TypeError, KeyError):
-            return self._eval_subexprs(expr)
+    def _subst_const_in_value(self, value):
+        if isinstance(value, str) and value in self.constants:
+            return int(self.constants[value])
+        return value
     
-    def _eval_subexprs(self, expr: IRExpr) -> IRExpr:
-        if isinstance(expr, IRBinOp):
-            return IRBinOp(
-                self._eval_expr(expr.left),
-                expr.op,
-                self._eval_expr(expr.right)
+    def _subst_target(self, target):
+        if isinstance(target, IRQubit):
+            new_index = target.index
+            if isinstance(new_index, str) and new_index in self.constants:
+                new_index = int(self.constants[new_index])
+            elif isinstance(new_index, (int, float)) and new_index < 0:
+                pass
+            return IRQubit(target.reg, new_index)
+        if isinstance(target, IRAggregateTarget):
+            return IRAggregateTarget(
+                source=target.source,
+                condition=self.evaluator.eval_to_expr(target.condition) if target.condition else None
             )
-        elif isinstance(expr, IRUnaryOp):
-            return IRUnaryOp(
-                expr.op,
-                self._eval_expr(expr.expr)
-            )
-        elif isinstance(expr, IRFuncCall):
-            return IRFuncCall(
-                expr.name,
-                [self._eval_expr(a) for a in expr.args]
-            )
-        else:
-            return expr
-    
-    def _compute(self, expr: IRExpr) -> float:
-        if isinstance(expr, IRNumber):
-            return expr.value
-        elif isinstance(expr, IRConst):
-            if expr.name in self.env:
-                return self.env[expr.name]
-            raise ValueError(f"Unknown constant: {expr.name}")
-        elif isinstance(expr, IRBinOp):
-            left = self._compute(expr.left)
-            right = self._compute(expr.right)
-            op = expr.op
-            if op == '+': return left + right
-            if op == '-': return left - right
-            if op == '*': return left * right
-            if op == '/': return left / right
-            if op == '**': return left ** right
-            if op == '%': return left % right
-            raise ValueError(f"Unknown binary operator: {op}")
-        elif isinstance(expr, IRUnaryOp):
-            val = self._compute(expr.expr)
-            if expr.op == '-': return -val
-            if expr.op == '+': return +val
-            raise ValueError(f"Unknown unary operator: {expr.op}")
-        elif isinstance(expr, IRFuncCall):
-            args = [self._compute(a) for a in expr.args]
-            name = expr.name.lower()
-            if name == 'sin': return math.sin(*args)
-            if name == 'cos': return math.cos(*args)
-            if name == 'tan': return math.tan(*args)
-            if name == 'exp': return math.exp(*args)
-            if name == 'log': return math.log(*args)
-            if name == 'sqrt': return math.sqrt(*args)
-            if name == 'abs': return abs(*args)
-            raise ValueError(f"Unknown function: {expr.name}")
-        else:
-            raise ValueError(f"Cannot compute: {expr}")
+        return target

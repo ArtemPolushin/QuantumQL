@@ -16,7 +16,7 @@ class RangeEngine:
             elif isinstance(stmt, IRApply):
                 out.extend(self._expand_apply(stmt))
             elif isinstance(stmt, IRMeasure):
-                out.append(stmt)
+                out.append(self._expand_measure(stmt))
             elif isinstance(stmt, IRGateDef):
                 out.append(stmt)
             elif isinstance(stmt, IRInputParam):
@@ -58,7 +58,8 @@ class RangeEngine:
             if t.index is None:
                 return [t]
             elif isinstance(t.index, int):
-                return [t]
+                resolved = self._resolve_negative(t.reg, t.index)
+                return [IRQubit(t.reg, resolved)]
             elif t.index == "*":
                 if t.reg not in self.reg_sizes:
                     raise ValueError(f"Unknown register size for '{t.reg}'")
@@ -66,10 +67,11 @@ class RangeEngine:
                 return [IRQubit(t.reg, i) for i in range(size)]
             elif isinstance(t.index, tuple):
                 start, end = t.index
+                start = self._resolve_negative(t.reg, start)
+                end = self._resolve_negative(t.reg, end)
                 if t.reg in self.reg_sizes:
                     size = self.reg_sizes[t.reg]
-                    indices = range(start, end + 1) if start <= end else range(start, end - 1, -1)
-                    for i in indices:
+                    for i in (start, end):
                         if i < 0 or i >= size:
                             raise ValueError(
                                 f"Index {i} out of range for register '{t.reg}' of size {size}"
@@ -79,3 +81,38 @@ class RangeEngine:
                 else:
                     return [IRQubit(t.reg, i) for i in range(start, end - 1, -1)]
         return [t]
+    
+    def _resolve_negative(self, reg: str, index: int) -> int:
+        if index < 0:
+            if reg not in self.reg_sizes:
+                raise ValueError(f"Unknown register '{reg}' for negative index")
+            size = self.reg_sizes[reg]
+            resolved = size + index
+            if resolved < 0:
+                raise ValueError(
+                    f"Negative index {index} out of range for register '{reg}' of size {size}"
+                )
+            return resolved
+        return index
+    
+    def _expand_measure(self, stmt: IRMeasure):
+        new_source = []
+        for t in stmt.source:
+            if isinstance(t, IRQubit) and isinstance(t.index, (int, float)):
+                resolved = self._resolve_negative(t.reg, int(t.index))
+                new_source.append(IRQubit(t.reg, resolved))
+            else:
+                new_source.append(t)
+        stmt.source = new_source
+        
+        if stmt.target:
+            new_target = []
+            for t in stmt.target:
+                if isinstance(t, IRQubit) and isinstance(t.index, (int, float)):
+                    resolved = self._resolve_negative(t.reg, int(t.index))
+                    new_target.append(IRQubit(t.reg, resolved))
+                else:
+                    new_target.append(t)
+            stmt.target = new_target
+        
+        return stmt

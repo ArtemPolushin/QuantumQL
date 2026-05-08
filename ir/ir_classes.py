@@ -93,3 +93,17 @@ class IRSelectTarget(IRTarget):
 @dataclass
 class IRInputParam(IRStmt):
     name: str
+
+@dataclass
+class IRAggregateTarget(IRTarget):
+    source: str
+    condition: Optional[IRExpr] = None
+
+@dataclass
+class IRAggregateAlias(IRTarget):
+    alias: str
+
+@dataclass
+class IRConstDecl(IRStmt):
+    name: str
+    value: IRExpr

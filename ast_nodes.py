@@ -89,3 +89,21 @@ class SelectExpr(Target):
 @dataclass
 class InputParam(Stmt):
     name: str
+
+@dataclass
+class AllFromSelect(Target):
+    alias: str
+
+@dataclass
+class AllFromWhere(Target):
+    source: str
+    condition: Optional[Expr] = None
+
+@dataclass
+class ConstDecl(Stmt):
+    name: str
+    value: Expr
+
+@dataclass
+class ConstRef(Expr):
+    name: str

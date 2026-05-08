@@ -45,6 +45,11 @@ class IRValidator:
             gate_info = GATES[gate_lower]
             if gate_info.has_params and len(stmt.params) == 0:
                 raise ValueError(f"Gate '{stmt.gate}' requires parameters")
+        for target in stmt.targets:
+            if isinstance(target, (IRAggregateTarget, IRAggregateAlias)):
+                raise ValueError(
+                    f"Unresolved aggregation target in APPLY: {target}"
+                )
             
     def _validate_measure(self, stmt: IRMeasure):
         if stmt.target and len(stmt.source) != len(stmt.target):

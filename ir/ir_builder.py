@@ -10,6 +10,8 @@ class IRBuilder:
             return IRCreateQubits(stmt.name, stmt.size)
         if isinstance(stmt, CreateBits):
             return IRCreateBits(stmt.name, stmt.size)
+        if isinstance(stmt, ConstDecl):
+            return IRConstDecl(stmt.name, self._expr(stmt.value))
         if isinstance(stmt, ApplyGate):
             return IRApply(
                 gate=stmt.gate,
@@ -33,7 +35,6 @@ class IRBuilder:
                 stmt.params,
                 [self._stmt(s) for s in stmt.body]
             )
-        
         if isinstance(stmt, InputParam):
             return IRInputParam(stmt.name)
 
@@ -62,6 +63,10 @@ class IRBuilder:
     def _target(self, t):
         if isinstance(t, QubitRef):
             return IRQubit(t.register, t.index)
+        if isinstance(t, AllFromSelect):
+            return IRAggregateAlias(t.alias)
+        if isinstance(t, AllFromWhere):
+            return IRAggregateTarget(t.source, self._expr(t.condition) if t.condition else None)
         if isinstance(t, SelectExpr):
             return IRSelectTarget(
                 t.alias,

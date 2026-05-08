@@ -34,24 +34,36 @@ def p_statement(p):
               | select_stmt
               | gate_def
               | input_stmt
+              | const_decl
     """
     p[0] = p[1]
 
+def p_const_decl(p):
+    "const_decl : CONST IDENT ASSIGN expr SEMICOLON"
+    p[0] = ConstDecl(p[2], p[4])
+
 def p_create_stmt(p):
-    "create_stmt : CREATE QUBITS IDENT LBRACKET INT RBRACKET SEMICOLON"
+    "create_stmt : CREATE QUBITS IDENT LBRACKET size_expr RBRACKET SEMICOLON"
     p[0] = CreateQubits(p[3], p[5])
 
 def p_create_bits_stmt(p):
-    "create_stmt : CREATE BITS IDENT LBRACKET INT RBRACKET SEMICOLON"
+    "create_stmt : CREATE BITS IDENT LBRACKET size_expr RBRACKET SEMICOLON"
     p[0] = CreateBits(p[3], p[5])
 
+def p_size_expr(p):
+    """
+    size_expr : INT
+              | IDENT
+              | MINUS INT
+    """
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = -p[2]
+        
 def p_apply_stmt(p):
     "apply_stmt : APPLY gate_call ON target_list SEMICOLON"
     p[0] = ApplyGate(p[2][0], p[4], params=p[2][1])
-
-def p_input_stmt(p):
-    "input_stmt : INPUT IDENT SEMICOLON"
-    p[0] = InputParam(p[2])
 
 def p_gate_call(p):
     """
@@ -62,6 +74,10 @@ def p_gate_call(p):
         p[0] = (p[1], [])
     else:
         p[0] = (p[1], p[3])
+
+def p_input_stmt(p):
+    "input_stmt : INPUT IDENT SEMICOLON"
+    p[0] = InputParam(p[2])
 
 def p_select_stmt(p):
     """
@@ -79,7 +95,7 @@ def p_where_clause(p):
     else:
         p[0] = None
 
-def p_target_list(p):
+def p_target_list_base(p):
     """
     target_list : single_target target_tail
     """
@@ -99,8 +115,19 @@ def p_single_target(p):
     """
     single_target : qubit
                   | select_expr
+                  | all_from
     """
     p[0] = p[1]
+
+def p_all_from(p):
+    """
+    all_from : ALL FROM IDENT
+             | ALL FROM IDENT WHERE expr
+    """
+    if len(p) == 4:
+        p[0] = AllFromSelect(p[3])
+    else:
+        p[0] = AllFromWhere(p[3], p[5])
 
 def p_select_expr(p):
     """
@@ -111,28 +138,49 @@ def p_select_expr(p):
 def p_qubit(p):
     """
     qubit : IDENT
-          | IDENT LBRACKET INT RBRACKET
-          | IDENT LBRACKET STAR RBRACKET
-          | IDENT LBRACKET INT COLON INT RBRACKET
+          | IDENT LBRACKET qubit_index RBRACKET
     """
     if len(p) == 2:
         p[0] = QubitRef(p[1], None)
-    elif len(p) == 5:
-        if p[3] == "*":
-            p[0] = QubitRef(p[1], "*")
+    else:
+        p[0] = QubitRef(p[1], p[3])
+
+def p_qubit_index(p):
+    """
+    qubit_index : INT
+                | STAR
+                | INT COLON INT
+                | MINUS INT
+                | MINUS INT COLON INT
+                | MINUS INT COLON MINUS INT
+                | IDENT
+                | MINUS IDENT
+    """
+    if len(p) == 2:
+        if p[1] == '*':
+            p[0] = '*'
         else:
-            p[0] = QubitRef(p[1], p[3])
-    else:  # len == 7
-        p[0] = QubitRef(p[1], (p[3], p[5]))
+            p[0] = p[1]
+    elif len(p) == 3:
+        if isinstance(p[2], int):
+            p[0] = -p[2]
+        else:
+            p[0] = ('neg', p[2])
+    elif len(p) == 4:
+        p[0] = (p[1], p[3])
+    elif len(p) == 5:
+        p[0] = (-p[2], p[4])
+    elif len(p) == 6:
+        p[0] = (-p[2], -p[5])
 
 def p_measure_stmt(p):
     """
     measure_stmt : MEASURE target_list ARROW target_list SEMICOLON
                  | MEASURE target_list SEMICOLON
     """
-    if len(p) == 6:  # MEASURE q -> c;
+    if len(p) == 6:
         p[0] = Measure(p[2], p[4])
-    else:  # MEASURE q;
+    else:
         p[0] = Measure(p[2], None)
 
 def p_gate_def(p):

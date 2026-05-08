@@ -5,7 +5,7 @@ from ir.ir_select_resolver import SelectResolver
 from range_engine import RangeEngine
 from ir.ir_single_qubit_expand import SingleQubitExpand
 from ir.ir_validator import IRValidator
-
+from ir.ir_aggregate_resolver import IRAggregateResolver
 
 class IRPipeline:    
     def __init__(self, debug=False):
@@ -14,6 +14,7 @@ class IRPipeline:
             ("Build IR", IRBuilder()),
             ("Const Eval", ConstEvaluator()),
             ("Lowering", IRLowering()),
+            ("Aggregate Resolver", IRAggregateResolver()),
             ("Select Resolver", SelectResolver()),
             ("Range Engine", RangeEngine()),
             ("Single Qubit Expand", SingleQubitExpand()),
