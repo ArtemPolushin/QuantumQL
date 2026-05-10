@@ -73,6 +73,10 @@ class QiskitGenerator:
         if isinstance(p, IRConst):
             if p.name == 'pi':
                 return math.pi
+            if p.name == 'e':
+                return math.e
+            if p.name == 'tau':
+                return math.tau
             raise ValueError(f"Unknown constant: {p.name}")
         if isinstance(p, IRVar):
             if p.name in self.input_params:
@@ -85,6 +89,9 @@ class QiskitGenerator:
         if isinstance(p, IRUnaryOp):
             inner = self._eval_param(p.expr)
             return f"({p.op}{inner})"
+        if isinstance(p, IRFuncCall):
+            args = [self._eval_param(a) for a in p.args]
+            return f"math.{p.name}({', '.join(args)})"
         raise ValueError(f"Unexpected expression in generator: {type(p)}")
 
     def _apply(self, stmt: IRApply):

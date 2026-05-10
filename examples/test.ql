@@ -1,30 +1,21 @@
--- определение пользовательского гейта
-GATE BELL(a, b) {
-    APPLY H ON a;
-    APPLY CX ON a, b;
-}
-
--- создание регистров
 CREATE QUBITS q[4];
 CREATE QUBITS anc[3];
 CREATE BITS measure_bit[7];
+-- Параметр, задаваемый при запуске
+INPUT phi;
+-- H на всех кубитах q
+APPLY H ON q[*];
+-- Параметризованные гейты с математическими выражениями
+APPLY RX(cos(pi)) ON q[1];
+APPLY RZ(phi / 2) ON q[2];
 
--- применение гейтов с выражениями
-APPLY H ON q[0];
-APPLY RX(pi/2) ON q[1];
-APPLY RZ(pi) ON q[2];
-
--- select и групповая операция
+-- SELECT и ALL FROM 
 SELECT even FROM q WHERE index % 2 == 0;
 APPLY H ON even;
-
--- использование пользовательского гейта
-APPLY BELL ON q[0], anc[0];
-
--- групповые операции с диапазонами
+APPLY X ON ALL FROM q WHERE index > 0 AND index + 1 != 2;
+-- Групповая операция и диапазон
 APPLY CX ON q[0:2], anc[0:2];
-APPLY H ON q[*];
 
--- измерение
+-- Измерение в диапазоны классического регистра
 MEASURE q -> measure_bit[0:3];
 MEASURE anc -> measure_bit[4:6];
