@@ -54,7 +54,6 @@ def p_size_expr(p):
     """
     size_expr : INT
               | IDENT
-              | MINUS INT
     """
     if len(p) == 2:
         p[0] = p[1]

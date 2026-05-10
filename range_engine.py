@@ -8,7 +8,8 @@ class RangeEngine:
         for stmt in ir.body:
             if isinstance(stmt, IRCreateQubits):
                 self.reg_sizes[stmt.name] = stmt.size
-        
+            elif isinstance(stmt, IRCreateBits):
+                self.reg_sizes[stmt.name] = stmt.size
         out = []
         for stmt in ir.body:
             if isinstance(stmt, IRCreateQubits):
@@ -96,23 +97,27 @@ class RangeEngine:
         return index
     
     def _expand_measure(self, stmt: IRMeasure):
-        new_source = []
-        for t in stmt.source:
-            if isinstance(t, IRQubit) and isinstance(t.index, (int, float)):
-                resolved = self._resolve_negative(t.reg, int(t.index))
-                new_source.append(IRQubit(t.reg, resolved))
-            else:
-                new_source.append(t)
-        stmt.source = new_source
-        
-        if stmt.target:
-            new_target = []
-            for t in stmt.target:
-                if isinstance(t, IRQubit) and isinstance(t.index, (int, float)):
-                    resolved = self._resolve_negative(t.reg, int(t.index))
-                    new_target.append(IRQubit(t.reg, resolved))
+        if (stmt.target is None and len(stmt.source) == 1 and isinstance(stmt.source[0], IRQubit) and stmt.source[0].index is None):
+            return stmt
+        def expand_side(targets):
+            res = []
+            for t in targets:
+                if isinstance(t, IRQubit) and t.index is None:
+                    size = self.reg_sizes.get(t.reg)
+                    if size is None:
+                        raise ValueError(f"Unknown register size for '{t.reg}' in measure")
+                    res.extend([IRQubit(t.reg, i) for i in range(size)])
                 else:
-                    new_target.append(t)
-            stmt.target = new_target
-        
-        return stmt
+                    res.extend(self._expand_target_to_list(t))
+            return res
+
+        new_source = expand_side(stmt.source)
+        new_target = expand_side(stmt.target) if stmt.target else None
+
+        if new_target is not None and len(new_source) != len(new_target):
+            raise ValueError(
+                f"Measure source and target count mismatch: "
+                f"{len(new_source)} vs {len(new_target)}"
+            )
+
+        return IRMeasure(source=new_source, target=new_target)

@@ -14,7 +14,7 @@ def run_cli(args):
     return result.returncode, result.stdout, result.stderr
 
 def test_cli_qiskit(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -39,7 +39,7 @@ def test_cli_qiskit(tmp_path):
 
 
 def test_cli_openqasm(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.qasm"
 
     input_file.write_text("""
@@ -68,7 +68,7 @@ def test_cli_openqasm(tmp_path):
 
 
 def test_cli_with_params(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -90,7 +90,7 @@ def test_cli_with_params(tmp_path):
 
 
 def test_cli_with_expressions(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -110,7 +110,7 @@ def test_cli_with_expressions(tmp_path):
 
 
 def test_cli_with_select(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -133,7 +133,7 @@ def test_cli_with_select(tmp_path):
 
 
 def test_cli_with_gate_definition(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -158,7 +158,7 @@ def test_cli_with_gate_definition(tmp_path):
 
 
 def test_cli_syntax_error(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -176,7 +176,7 @@ def test_cli_syntax_error(tmp_path):
 
 
 def test_cli_file_not_found(tmp_path):
-    input_file = tmp_path / "nonexistent.qql"
+    input_file = tmp_path / "nonexistent.ql"
     output_file = tmp_path / "output.py"
 
     returncode, stdout, stderr = run_cli([
@@ -188,7 +188,7 @@ def test_cli_file_not_found(tmp_path):
 
 
 def test_cli_unknown_gate_error(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -206,7 +206,7 @@ def test_cli_unknown_gate_error(tmp_path):
 
 
 def test_cli_wrong_qubit_count_error(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -223,7 +223,7 @@ def test_cli_wrong_qubit_count_error(tmp_path):
 
 
 def test_cli_unsupported_target(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.txt"
 
     input_file.write_text("CREATE QUBITS q[1];")
@@ -243,7 +243,7 @@ def test_cli_missing_arguments():
     assert "Usage" in stderr or "usage" in stderr.lower()
 
 def test_cli_complex_program(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -279,7 +279,7 @@ def test_cli_complex_program(tmp_path):
     assert "Success" in stdout
 
 def test_cli_success_message(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("CREATE QUBITS q[1];")
@@ -293,7 +293,7 @@ def test_cli_success_message(tmp_path):
     assert str(output_file) in stdout
 
 def test_cli_with_select(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -326,7 +326,7 @@ def test_cli_with_select(tmp_path):
 
 
 def test_cli_with_inline_select(tmp_path):
-    input_file = tmp_path / "program.qql"
+    input_file = tmp_path / "program.ql"
     output_file = tmp_path / "output.py"
 
     input_file.write_text("""
@@ -348,3 +348,104 @@ def test_cli_with_inline_select(tmp_path):
     assert "qc.h(q[2])" in code
     assert "qc.h(q[3])" not in code
     assert "qc.h(q[4])" not in code
+
+def test_cli_with_input_param(tmp_path):
+    input_file = tmp_path / "program.ql"
+    output_file = tmp_path / "output.py"
+    input_file.write_text("""
+    INPUT theta;
+    CREATE QUBITS q[1];
+    APPLY RX(theta) ON q[0];
+    MEASURE q;
+    """)
+    returncode, stdout, stderr = run_cli([str(input_file), "qiskit", str(output_file)])
+    assert returncode == 0
+    code = output_file.read_text()
+    assert "Parameter" in code
+    assert "theta" in code
+
+def test_cli_with_const(tmp_path):
+    input_file = tmp_path / "program.qql"
+    output_file = tmp_path / "output.py"
+    input_file.write_text("""
+    CONST N = 4;
+    CREATE QUBITS q[8];
+    APPLY H ON ALL FROM q WHERE index < N;
+    """)
+    returncode, stdout, stderr = run_cli([
+        str(input_file), "qiskit", str(output_file)
+    ])
+    assert returncode == 0, f"CLI failed with stderr: {stderr}"
+    code = output_file.read_text()
+    assert 'QuantumRegister(8, "q")' in code
+    assert "qc.h(q[0])" in code
+    assert "qc.h(q[1])" in code
+    assert "qc.h(q[2])" in code
+    assert "qc.h(q[3])" in code
+
+def test_cli_with_all_from(tmp_path):
+    input_file = tmp_path / "program.ql"
+    output_file = tmp_path / "output.py"
+    input_file.write_text("""
+    CREATE QUBITS q[4];
+    APPLY H ON ALL FROM q WHERE index < 2;
+    MEASURE q;
+    """)
+    returncode, stdout, stderr = run_cli([str(input_file), "qiskit", str(output_file)])
+    assert returncode == 0
+    code = output_file.read_text()
+    assert "qc.h(q[0])" in code
+    assert "qc.h(q[1])" in code
+
+
+def test_cli_with_all_from_alias(tmp_path):
+    input_file = tmp_path / "program.ql"
+    output_file = tmp_path / "output.py"
+    input_file.write_text("""
+    CREATE QUBITS q[4];
+    SELECT half FROM q WHERE index < 2;
+    APPLY X ON ALL FROM half;
+    MEASURE q;
+    """)
+    returncode, stdout, stderr = run_cli([
+        str(input_file), "qiskit", str(output_file)
+    ])
+    assert returncode == 0, f"CLI failed with stderr: {stderr}"
+    code = output_file.read_text()
+    assert "qc.x(q[0])" in code
+    assert "qc.x(q[1])" in code
+
+
+def test_cli_with_barrier(tmp_path):
+    input_file = tmp_path / "program.ql"
+    output_file = tmp_path / "output.py"
+    input_file.write_text("""
+    CREATE QUBITS q[3];
+    APPLY BARRIER ON q[0], q[1], q[2];
+    APPLY H ON q[0];
+    MEASURE q;
+    """)
+    returncode, stdout, stderr = run_cli([
+        str(input_file), "qiskit", str(output_file)
+    ])
+    assert returncode == 0, f"CLI failed with stderr: {stderr}"
+    code = output_file.read_text()
+    assert "qc.barrier" in code
+
+
+def test_cli_with_negative_index(tmp_path):
+    input_file = tmp_path / "program.ql"
+    output_file = tmp_path / "output.py"
+    input_file.write_text("""
+    CREATE QUBITS q[4];
+    APPLY X ON q[-1];
+    APPLY H ON q[-2];
+    MEASURE q;
+    """)
+    returncode, stdout, stderr = run_cli([
+        str(input_file), "qiskit", str(output_file)
+    ])
+    assert returncode == 0, f"CLI failed with stderr: {stderr}"
+    code = output_file.read_text()
+    assert "qc.x(q[3])" in code
+    assert "qc.h(q[2])" in code

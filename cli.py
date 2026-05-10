@@ -12,7 +12,7 @@ def main():
     arg_parser = argparse.ArgumentParser(
         description="QuantumQL compiler — generates Qiskit or OpenQASM 3.0 code"
     )
-    arg_parser.add_argument("input", help="Input .qql file")
+    arg_parser.add_argument("input", help="Input .ql file")
     arg_parser.add_argument("target", choices=["qiskit", "openqasm"],
                            help="Target language")
     arg_parser.add_argument("output", help="Output file")

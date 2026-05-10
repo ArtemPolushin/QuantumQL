@@ -7,7 +7,7 @@ GATE BELL(a, b) {
 -- создание регистров
 CREATE QUBITS q[4];
 CREATE QUBITS anc[3];
-CREATE BITS measure_bit[1];
+CREATE BITS measure_bit[7];
 
 -- применение гейтов с выражениями
 APPLY H ON q[0];
@@ -26,4 +26,5 @@ APPLY CX ON q[0:2], anc[0:2];
 APPLY H ON q[*];
 
 -- измерение
-MEASURE anc[0] -> measure_bit[0];
+MEASURE q -> measure_bit[0:3];
+MEASURE anc -> measure_bit[4:6];

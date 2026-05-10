@@ -1,12 +1,13 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit.circuit import Parameter
 import math
 
 q = QuantumRegister(4, "q")
 anc = QuantumRegister(3, "anc")
+measure_bit = ClassicalRegister(7, "measure_bit")
 q_c = ClassicalRegister(4, "q_c")
 anc_c = ClassicalRegister(3, "anc_c")
-measure_bit = ClassicalRegister(1, "measure_bit")
-qc = QuantumCircuit(q, anc, q_c, anc_c, measure_bit)
+qc = QuantumCircuit(q, anc, measure_bit, q_c, anc_c)
 qc.h(q[0])
 qc.rx(1.5707963268, q[1])
 qc.rz(3.1415926536, q[2])
@@ -21,4 +22,10 @@ qc.h(q[0])
 qc.h(q[1])
 qc.h(q[2])
 qc.h(q[3])
-qc.measure(anc[0], measure_bit[0])
+qc.measure(q[0], measure_bit[0])
+qc.measure(q[1], measure_bit[1])
+qc.measure(q[2], measure_bit[2])
+qc.measure(q[3], measure_bit[3])
+qc.measure(anc[0], measure_bit[4])
+qc.measure(anc[1], measure_bit[5])
+qc.measure(anc[2], measure_bit[6])

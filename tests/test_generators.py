@@ -119,3 +119,19 @@ def test_qasm_full_program_shape():
     assert "h" in code
     assert "rx" in code
 
+def test_qiskit_barrier():
+    ir = IRProgram([
+        IRCreateQubits("q", 3),
+        IRApply("barrier", [], [IRQubit("q", 0), IRQubit("q", 1), IRQubit("q", 2)]),
+    ])
+    code = QiskitGenerator().generate(ir)
+    assert "qc.barrier(q[0], q[1], q[2])" in code
+
+
+def test_qasm_barrier():
+    ir = IRProgram([
+        IRCreateQubits("q", 3),
+        IRApply("barrier", [], [IRQubit("q", 0), IRQubit("q", 1), IRQubit("q", 2)]),
+    ])
+    code = OpenQASMGenerator().generate(ir)
+    assert "barrier q[0], q[1], q[2];" in code

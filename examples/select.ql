@@ -1,17 +1,11 @@
-CREATE QUBITS q[4];
-CREATE QUBITS oracle[1];
+INPUT theta;
+INPUT phi;
+CONST N = 4;
 
-APPLY H ON q[*];
+CREATE QUBITS q[N];
 
-SELECT marked FROM q WHERE index < 2;
-APPLY Z ON marked;
+APPLY RY(theta) ON ALL FROM q WHERE index % 2 == 0;
+APPLY RZ(phi) ON ALL FROM q WHERE index % 2 == 1;
 
-APPLY H ON q[*];
-APPLY X ON q[*];
-APPLY H ON q[3];
-APPLY X ON q[0], q[1], q[2];
-APPLY H ON q[3];
-APPLY X ON q[*];
-APPLY H ON q[*];
-
+APPLY CX ON q[0:2], q[1:3];
 MEASURE q;

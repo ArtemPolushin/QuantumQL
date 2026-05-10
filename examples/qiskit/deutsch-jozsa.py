@@ -1,4 +1,5 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit.circuit import Parameter
 import math
 
 qx = QuantumRegister(1, "qx")

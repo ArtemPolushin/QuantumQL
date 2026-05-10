@@ -35,7 +35,7 @@ class IRPipeline:
                     self._dump_ir(name, ir)
                     
             except Exception as e:
-                raise Exception(f"IR error in '{name}': {e}") from e
+                raise Exception(f"{name}: {e}") from e
         
         return ir
     

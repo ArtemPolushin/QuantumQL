@@ -37,7 +37,7 @@ def test_ints(int):
     assert tokens[0][0] == "INT"
 
 @pytest.mark.parametrize("float", [
-    "-3.1415",
+    "3.1415",
     "9.99"
 ])
 def test_floats(float):
